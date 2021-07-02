@@ -1,0 +1,32 @@
+# Network definition
+var il = inputLayer(4, 8, "glorot_uniform", false, 0, "relu")
+var ol = outputLayer(2, "glorot_uniform", "softmax")
+var n = il+ol
+var opt = optimizer("Adam", 0.001)
+var n = compile(n, opt, "categorical_crossentropy", "clf")
+
+# First training step (class 1 and class 2)
+var data = load_dataset("datasets/continuous_learning/train_1"); var X_train = get_data(data); var y_train = get_labels(data)
+var data = load_dataset("datasets/continuous_learning/test_1"); var X_test = get_data(data); var y_test = get_labels(data)
+var n1 = train(n, X_train, y_train, 5, 200, false)
+var y_pred = predict(n1, X_test)
+print("-- First training step --")
+evaluate(y_test, y_pred, "clf")
+save(n1, "n1")
+
+# Second training step (class 3)
+var data = load_dataset("datasets/continuous_learning/train_2"); var X_train = get_data(data); var y_train = get_labels(data)
+var data = load_dataset("datasets/continuous_learning/test_2"); var X_test = get_data(data); var y_test = get_labels(data)
+var n2 = train(load("n1"), X_train, y_train, 5, 200, false)
+var y_pred = predict(n2, X_test)
+print("\n-- Second training step --")
+evaluate(y_test, y_pred, "clf")
+save(n2, "n2")
+
+# Third training step (class 1, class 2 and class 3)
+var data = load_dataset("datasets/continuous_learning/train_3"); var X_train = get_data(data); var y_train = get_labels(data)
+var data = load_dataset("datasets/continuous_learning/test_2"); var X_test = get_data(data); var y_test = get_labels(data)
+var n3 = train(load("n2"), X_train, y_train, 5, 200, false)
+var y_pred = predict(n3, X_test)
+print("\n-- Third training step --")
+evaluate(y_test, y_pred, "clf")

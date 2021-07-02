@@ -1,0 +1,17 @@
+# Data loading
+var data = load_dataset("datasets/iris")
+var data = split(data, 0.75, "clf", true)
+var X_train = get(data, 0); var y_train = get(data, 1)
+var X_test = get(data, 2); var y_test = get(data, 3)
+
+# Network definition
+var il = inputLayer(len(get(X_train,0)), 8, "glorot_uniform", false, 0, "relu")
+var ol = outputLayer(3, "glorot_uniform", "softmax")
+var n = il+ol
+var opt = optimizer("Adam", 0.001)
+var n = compile(n, opt, "categorical_crossentropy", "clf")
+
+# Network trainning and evaluation
+var n = train(n, X_train, y_train, 5, 200, true)
+var y_pred = predict(n, X_test)
+evaluate(y_test, y_pred, "clf")

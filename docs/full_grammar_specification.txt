@@ -1,0 +1,47 @@
+program             : statements EOF
+statements			: NEWLINE* statement (NEWLINE+ statement)* NEWLINE*
+statement			: KEYWORD:return expr?
+					: KEYWORD:continue
+					: KEYWORD:break
+					: expr
+expr 				: KEYWORD:var IDENTIFIER EQ expr 
+					: comp-expr ((KEYWORD:and | KEYWORD:or) comp-expr)*
+comp-expr 			: KEYWORD:not comp-expr
+					: arith-expr ((EE|NE|LT|GT|LTE|GTE) arith-expr)*
+arith-expr 			: term ((PLUS | MINUS)) term)*
+term 				: factor ((MUL | DIV | MOD)) factor)*
+factor 				: (PLUS|MINUS) factor 
+					: power
+power 				: call (POW factor)*
+call				: atom (LPAREN (expr (COMMA expr)*)? RPAREN)?
+atom 				: INT | FLOAT | STR | IDENTIFIER
+					: LPAREN expr RPAREN
+					: list-expr
+					: mat-expr
+					: dataset-expr
+					: optimizer-expr
+					: input-layer-expr
+					: hidden-layer-expr
+					: output-layer-expr
+					: network-expr
+					: if-expr
+					: for-expr
+					: while-expr
+					: do-while-expr
+					: func-def
+list-expr			: LSQUARE (expr (COMMA expr)*)? RSQUARE
+mat-expr			: LROUND (mat-row (COMMA mat-row)*)? RROUND
+mat-row				: LROUND expr (COMMA expr)* RROUND
+dataset-expr		: KEYWORD:dataset LPAREN expr COMMA expr RPAREN
+optimizer-expr		: KEYWORD:optimizer LPAREN expr COMMA expr RPAREN
+input-layer-expr	: KEYWORD:inputLayer LPAREN expr COMMA expr COMMA expr COMMA expr COMMA expr COMMA expr RPAREN
+hidden-layer-expr	: KEYWORD:hiddenLayer LPAREN expr COMMA expr COMMA expr COMMA expr COMMA expr RPAREN
+output-layer-expr	: KEYWORD:outputLayer LPAREN expr COMMA expr RPAREN
+network-expr		: KEYWORD:network LPAREN expr (COMMA expr)* COMMA expr RPAREN
+if-expr				: KEYWORD:if expr ( (NEWLINE* statement (elif-expr | else-expr?)) | (LROUND NEWLINE statements (RROUND | elif-expr | else-expr)) )
+elif-expr			: KEYWORD:elif expr ( (NEWLINE* statement (elif-expr | else-expr?)) | (LROUND NEWLINE statements (RROUND | elif-expr | else-expr)) )
+else-expr			: KEYWORD:else (NEWLINE* statement  | (LROUND NEWLINE statements RROUND))
+for-expr 			: KEYWORD:for LPAREN IDENTIFIER COMMA expr COMMA expr (COMMA expr)? RPAREN (NEWLINE* statement | (LROUND statements RROUND))
+while-expr			: KEYWORD:while expr (NEWLINE* statement | (LROUND statements RROUND))
+do-while-expr		: KEYWORD:do (NEWLINE* statement NEWLINE* | (LROUND statements RROUND)) KEYWORD:while expr 
+func-def			: KEYWORD:function IDENTIFIER? LPAREN (IDENTIFIER (COMMA IDENTIFIER)*)? RPAREN (NEWLINE* statement | (LROUND statements RROUND))

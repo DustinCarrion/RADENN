@@ -1,0 +1,14 @@
+var x = "global variable"
+
+function f() print(x)
+    
+function g(){
+    var x = "inner variable"
+    f()
+}
+
+function h() print(x)
+        
+f() # global variable
+g() # inner variable
+h() # global variable

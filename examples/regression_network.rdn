@@ -1,0 +1,15 @@
+# Data loading
+var data = load_dataset("datasets/bostonHousePrices")
+var data = split(data, 0.75, "reg", false)
+var X_train = get(data, 0); var y_train = get(data, 1)
+var X_test = get(data, 2); var y_test = get(data, 3)
+
+# Network definition
+var n = inputLayer(13, 13, "RandomNormal", true, 0.2, "relu") + hiddenLayer(6, "RandomNormal", false, 0.3, "relu") + outputLayer(1, "RandomNormal", "linear")
+var opt = optimizer("RMSprop", 0.001)
+var n = compile(n, opt, "mean_squared_error", "reg")
+
+# Network trainning and evaluation
+var n = train(n, X_train, y_train, 5, 250, true)
+var y_pred = predict(n, X_test)
+evaluate(y_test, y_pred, "reg")

@@ -1,0 +1,37 @@
+function mean(vector) {
+	var sum = 0
+	for (i,0,len(vector)-1) var sum = sum + get(vector, i)
+	return  sum/len(vector)
+}
+
+var acc = []
+var se = []
+var sp = []
+
+for (i,0,9) {
+	var data_train = load_dataset("datasets/eeg/fold_"+i+"_train.csv")
+	var data_test = load_dataset("datasets/eeg/fold_"+i+"_test.csv")
+	var X_train = get_data(data_train); var y_train = get_labels(data_train)
+	var X_test = get_data(data_test); var y_test = get_labels(data_test)
+
+	var il = inputLayer(len(get(X_train,0)), 106, "glorot_uniform", true, 0, "relu")
+	var ol = outputLayer(32, "glorot_uniform", "softmax")
+	var n = network(il,ol)
+	var opt = optimizer("Adam", 0.001)
+	var n = compile(n, opt, "categorical_crossentropy", "clf")
+	var n = train(n, X_train, y_train, 100, 500, false)
+	var y_pred = predict(n, X_test)
+
+    print("-- Fold " + (i+1) + " --")
+	var metrics = evaluate(y_test, y_pred, "clf")
+	append(acc, get(metrics, 0))
+	append(se, get(metrics, 1))
+	append(sp, get(metrics, 2))	
+}
+
+print("\n -- Final results --")
+print("Mean Accuracy: " + mean(acc) + "%")
+print("Mean Sensitivity: " + mean(se) +  "%")
+print("Mean Specificity: " + mean(sp) +  "%")
+
+

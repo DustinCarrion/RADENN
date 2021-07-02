@@ -1,0 +1,29 @@
+var data = load_dataset("datasets/progressive_training/test"); var X_test = get_data(data); var y_test = get_labels(data)
+
+# Network definition
+var il = inputLayer(4, 8, "glorot_uniform", false, 0, "relu")
+var ol = outputLayer(3, "glorot_uniform", "softmax")
+var n = network(il, ol)
+var opt = optimizer("Adam", 0.001)
+var n = compile(n, opt, "categorical_crossentropy", "clf")
+
+# First training step
+var data = load_dataset("datasets/progressive_training/train_1"); var X_train = get_data(data); var y_train = get_labels(data)
+var n = train(n, X_train, y_train, 5, 200, false)
+var y_pred = predict(n, X_test)
+print("-- First training step --")
+evaluate(y_test, y_pred, "clf")
+
+# Second training step
+var data = load_dataset("datasets/progressive_training/train_2"); var X_train = get_data(data); var y_train = get_labels(data)
+var n = train(n, X_train, y_train, 5, 200, false)
+var y_pred = predict(n, X_test)
+print("\n-- Second training step --")
+evaluate(y_test, y_pred, "clf")
+
+# Third training step
+var data = load_dataset("datasets/progressive_training/train_3"); var X_train = get_data(data); var y_train = get_labels(data)
+var n = train(n, X_train, y_train, 5, 200, false)
+var y_pred = predict(n, X_test)
+print("\n-- Third training step --")
+evaluate(y_test, y_pred, "clf")
